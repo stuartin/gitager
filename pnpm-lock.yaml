@@ -83,6 +83,12 @@ importers:
 
   packages/core:
     dependencies:
+      '@hono/zod-validator':
+        specifier: ^0.5.0
+        version: 0.5.0(hono@4.7.8)(zod@3.24.3)
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       hono:
         specifier: 'catalog:'
         version: 4.7.8
@@ -649,6 +655,12 @@ packages:
     peerDependencies:
       hono: ^4
 
+  '@hono/zod-validator@0.5.0':
+    resolution: {integrity: sha512-ds5bW6DCgAnNHP33E3ieSbaZFd5dkV52ZjyaXtGoR06APFrCtzAsKZxTHwOrJNBdXsi0e5wNwo5L4nVEVnJUdg==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.19.1
+
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -708,6 +720,10 @@ packages:
   '@napi-rs/wasm-runtime@0.2.9':
     resolution: {integrity: sha512-OKRBiajrrxB9ATokgEQoG87Z25c67pCpYcCwmXYX8PBftC9pBfN18gnm/fh1wurSLEKIAt+QRFLFCQISrb66Jg==}
 
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -719,6 +735,9 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@paralleldrive/cuid2@2.2.2':
+    resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
   '@pkgr/core@0.1.1':
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
@@ -3356,6 +3375,11 @@ snapshots:
     dependencies:
       hono: 4.7.8
 
+  '@hono/zod-validator@0.5.0(hono@4.7.8)(zod@3.24.3)':
+    dependencies:
+      hono: 4.7.8
+      zod: 3.24.3
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -3413,6 +3437,8 @@ snapshots:
       '@tybys/wasm-util': 0.9.0
     optional: true
 
+  '@noble/hashes@1.8.0': {}
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -3424,6 +3450,10 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.18.0
+
+  '@paralleldrive/cuid2@2.2.2':
+    dependencies:
+      '@noble/hashes': 1.8.0
 
   '@pkgr/core@0.1.1': {}
 

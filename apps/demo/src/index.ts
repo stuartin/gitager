@@ -4,9 +4,11 @@ import 'dotenv/config'
 
 serve({
   fetch: gitager({
-    gitUser: 'oauth2',
-    gitToken: process.env.GIT_TOKEN!,
-    gitUrl: process.env.GIT_URL!
+    git: {
+      user: 'oauth2',
+      token: process.env.GIT_TOKEN!,
+      url: process.env.GIT_URL!
+    }
   }).fetch,
   port: 3000,
 }, (info) => {
