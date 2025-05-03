@@ -1,14 +1,11 @@
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
-
-const app = new Hono();
-
-app.get('/', (c) => {
-  return c.text('Hello Hono!');
-});
+import { gitager } from '@gitager/core';
 
 serve({
-  fetch: app.fetch,
+  fetch: gitager({
+    gitToken: '',
+    gitUrl: ''
+  }).fetch,
   port: 3000,
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}`);

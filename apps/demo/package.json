@@ -6,15 +6,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@hono/node-server": "^1.14.1",
-    "hono": "^4.7.8"
+    "@gitager/core":"workspace:",
+    "@hono/node-server": "^1.14.1"
   },
   "devDependencies": {
     "@gitager/config-eslint": "workspace:",
     "@gitager/config-typescript": "workspace:",
-    "@types/node": "^20.11.17",
     "eslint": "catalog:",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "tsx": "^4.7.1"
   }
 }
