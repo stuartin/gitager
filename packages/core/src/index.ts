@@ -1,5 +1,5 @@
-import { orgs } from "./api/routes/orgs";
 import { factory } from "./api";
+import { orgs } from "./api/features/orgs.api";
 
 export type GitagerOptions = {
     git: {
@@ -12,11 +12,14 @@ export type GitagerOptions = {
     }
 };
 
+export type GitagerApp = ReturnType<typeof gitager>
+
 export function gitager(options: GitagerOptions) {
     const f = factory(options)
     const app = f.createApp()
 
-    app.basePath(options.api?.basePath || '/api')
+    app
+        .basePath(options.api?.basePath || '/api')
         .route("/", orgs(f))
 
     return app
