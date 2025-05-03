@@ -1,0 +1,15 @@
+{
+  "name": "@gitager/core",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@gitager/config-eslint": "workspace:*",
+    "@gitager/config-typescript": "workspace:*",
+    "eslint": "catalog:"
+  }
+}
