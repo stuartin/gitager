@@ -1,9 +1,12 @@
 import { createFactory } from "hono/factory";
 import { logger } from "hono/logger";
 import { gitRoute } from "./api/routes/git";
+import { Git } from "./controllers/git";
 
-type GitagerConfig = {
+
+export type GitagerConfig = {
     gitUrl: string;
+    gitUser?: string; // should be oauth2 if using github fine grained tokens
     gitToken: string;
     basePath?: string
 };
@@ -11,39 +14,49 @@ type GitagerConfig = {
 type Env = {
     Variables: {
         config: GitagerConfig
-        fs: string
-        git: string
+        git: Git
     }
 }
 
 export type GitagerFactory = ReturnType<typeof init>
 
-function init(options: GitagerConfig) {
-    return createFactory<Env>({
-        initApp: (app) => {
+function init(config: GitagerConfig) {
 
-            // initialie middleware
-            app.use(logger())
-            app.use(async (c, next) => {
-                c.set('config', options)
-                c.set('fs', "TODO")
-                c.set('git', "TODO")
-                await next()
-            })
+    try {
 
-            // initialize base routes
-            app.get("/", (c) => {
-                return c.text('welcome to gitager')
-            })
-        },
-    })
+        const git = new Git(config)
+        git.init()
+
+        return createFactory<Env>({
+            initApp: (app) => {
+
+                // initialie middleware
+                app.use(logger())
+                app.use(async (c, next) => {
+                    c.set('config', config)
+                    c.set('git', git)
+                    await next()
+                })
+
+                // initialize base routes
+                app.get("/", (c) => {
+                    return c.text('welcome to gitager')
+                })
+            },
+        })
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 export function gitager(options: GitagerConfig) {
 
     const factory = init(options)
-    const app = factory.createApp()
+    if (!factory) throw new Error("Could not connect to git url.")
 
+
+    const app = factory.createApp()
     app.basePath(options.basePath || '/api')
         .route("/git", gitRoute(factory))
 
