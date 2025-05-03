@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "preview": {},
+    "lint": {},
+    "check-types": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

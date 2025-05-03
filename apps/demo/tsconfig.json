@@ -1,0 +1,3 @@
+{
+  "extends": "@gitager/config-typescript/tsconfig.base.json"
+}
