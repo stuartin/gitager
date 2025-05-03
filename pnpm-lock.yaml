@@ -33,9 +33,18 @@ importers:
         specifier: ^4.7.8
         version: 4.7.8
     devDependencies:
+      '@gitager/config-eslint':
+        specifier: 'workspace:'
+        version: link:../../packages/config-eslint
+      '@gitager/config-typescript':
+        specifier: 'workspace:'
+        version: link:../../packages/config-typescript
       '@types/node':
         specifier: ^20.11.17
         version: 20.17.32
+      eslint:
+        specifier: 'catalog:'
+        version: 9.25.1(jiti@2.4.2)
       tsx:
         specifier: ^4.7.1
         version: 4.19.2
@@ -68,6 +77,18 @@ importers:
         version: 8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)
 
   packages/config-typescript: {}
+
+  packages/core:
+    dependencies:
+      '@gitager/config-eslint':
+        specifier: workspace:*
+        version: link:../config-eslint
+      '@gitager/config-typescript':
+        specifier: workspace:*
+        version: link:../config-typescript
+      eslint:
+        specifier: 'catalog:'
+        version: 9.25.1(jiti@2.4.2)
 
 packages:
 
