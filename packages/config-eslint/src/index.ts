@@ -13,17 +13,3 @@ export function base() {
     rules,
   );
 }
-
-export async function svelte() {
-  return antfu(
-    {
-      stylistic: {
-        indent: 2,
-        semi: true,
-      },
-      formatters: true,
-      svelte: true,
-    },
-    rules,
-  );
-}

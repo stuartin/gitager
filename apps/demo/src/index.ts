@@ -1,15 +1,17 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { gitager } from '@gitager/core';
 
-const app = new Hono()
+import 'dotenv/config'
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
+const server = gitager({
+  git: {
+    user: 'oauth2',
+    token: process.env.GIT_TOKEN!,
+    url: process.env.GIT_URL!
+  }
 })
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+server.listen(
+  3000,
+  '127.0.0.1',
+  () => console.log('Listening on http://127.0.0.1:3000')
+)
