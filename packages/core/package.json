@@ -14,6 +14,7 @@
     "@orpc/server": "^1.1.0",
     "@orpc/zod": "^1.1.0",
     "@paralleldrive/cuid2": "^2.2.2",
+    "bree": "^9.2.4",
     "isomorphic-git": "^1.30.1",
     "memfs": "^4.17.0",
     "zod": "catalog:"
@@ -21,6 +22,11 @@
   "devDependencies": {
     "@gitager/config-eslint": "workspace:*",
     "@gitager/config-typescript": "workspace:*",
+    "cron-validate": "1.4.5",
     "eslint": "catalog:"
+  },
+  "overridesComment": " below is because of https://github.com/breejs/bree/issues/262",
+  "overrides": {
+    "cron-validate": "1.4.5"
   }
 }

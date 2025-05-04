@@ -2,7 +2,7 @@ import { gitager } from '@gitager/core';
 
 import 'dotenv/config'
 
-const server = gitager({
+const { jobs, server } = gitager({
   git: {
     user: 'oauth2',
     token: process.env.GIT_TOKEN!,
@@ -63,6 +63,7 @@ const server = gitager({
   ]
 })
 
+jobs.start()
 server.listen(
   3000,
   '127.0.0.1',
