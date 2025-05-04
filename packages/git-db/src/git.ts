@@ -1,8 +1,8 @@
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/node'
 import { fs } from 'memfs'
-import type { GitagerOptions } from '../..';
 import path from 'node:path';
+import type { GitOptions } from './types';
 
 
 type CommitType = 'feat' | 'fix' | 'docs' | 'style' | 'refactor' | 'perf' | 'test' | 'build' | 'ci' | 'chore' | 'revert'
@@ -27,7 +27,7 @@ export class Git {
     }
 
     constructor(
-        protected options: GitagerOptions
+        protected options: GitOptions
     ) { }
 
     protected async clone(dir: string, url: string) {
@@ -38,10 +38,10 @@ export class Git {
             url,
             depth: 1,
             singleBranch: true,
-            ref: this.options.git.branch || 'main',
+            ref: this.options.branch || 'main',
             onAuth: () => ({
-                username: this.options.git.user,
-                password: this.options.git.token
+                username: this.options.user,
+                password: this.options.token
             })
         })
     }
@@ -53,8 +53,8 @@ export class Git {
             dir,
             author: this.author,
             onAuth: () => ({
-                username: this.options.git.user,
-                password: this.options.git.token
+                username: this.options.user,
+                password: this.options.token
             })
         })
     }
@@ -90,8 +90,8 @@ export class Git {
             http,
             dir,
             onAuth: () => ({
-                username: this.options.git.user,
-                password: this.options.git.token
+                username: this.options.user,
+                password: this.options.token
             })
         })
     }

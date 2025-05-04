@@ -1,9 +1,9 @@
 import { fs } from 'memfs'
 import { z } from 'zod'
 import path from 'node:path'
-import { Git } from '../git'
-import type { GitagerOptions } from '../..'
+import { Git } from './git'
 import { createId } from '@paralleldrive/cuid2'
+import type { GitOptions } from './types'
 
 export type Primitive = string | number | boolean
 
@@ -88,7 +88,7 @@ function matchesWhere<T>(item: T, where: Where<T>): boolean {
     return true
 }
 
-export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
+export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
 
     private path: string
 
@@ -96,14 +96,14 @@ export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
         private repoPath: string,
         private subPath: string = '/',
         private schema: TSchema,
-        options: GitagerOptions
+        options: GitOptions
     ) {
         super(options)
         this.path = path.join(this.repoPath, this.subPath)
     }
 
     async init() {
-        await this.clone(this.repoPath, this.options.git.url)
+        await this.clone(this.repoPath, this.options.url)
     }
 
     private getFilePath(id: string) {

@@ -1,11 +1,11 @@
-import { FileDB } from '../../../lib/file';
+import { GitDB } from '@gitager/git-db/db';
 import { createRouter } from '../../../lib/orpc';
 import { requireAuth } from '../../../lib/orpc/middleware/require-auth';
 import { servicesContract, ServicesSchema } from './services.contract';
 
 const os = createRouter(servicesContract)
     .use(async ({ context, next }) => {
-        const db = new FileDB("/core", "/services", ServicesSchema, context.options)
+        const db = new GitDB("/core", "/services", ServicesSchema, context.options.git)
         await db.init()
 
         return next({

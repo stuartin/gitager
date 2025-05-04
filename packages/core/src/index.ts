@@ -1,13 +1,9 @@
+import type { GitOptions } from "@gitager/git-db/types";
 import { createAPI } from "./api";
 import { createServer } from "./lib/orpc";
 
 export type GitagerOptions = {
-    git: {
-        url: string;
-        branch?: string // defaults to main
-        user?: string; // should be oauth2 if using github fine grained tokens
-        token: string;
-    },
+    git: GitOptions
     api?: {
         basePath?: `/${string}`
     }
