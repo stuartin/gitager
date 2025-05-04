@@ -3,6 +3,7 @@ import { z } from 'zod'
 import path from 'node:path'
 import { Git } from '../git'
 import type { GitagerOptions } from '../..'
+import { createId } from '@paralleldrive/cuid2'
 
 export type Primitive = string | number | boolean
 
@@ -109,7 +110,7 @@ export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
         return path.join(this.path, `${id}.json`)
     }
 
-    async findOne(id: string): Promise<z.infer<TSchema> | null> {
+    async get(id: string): Promise<z.infer<TSchema> | null> {
         await this.pull(this.repoPath)
 
         try {
@@ -121,12 +122,11 @@ export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
         }
     }
 
-    async findMany(): Promise<z.infer<TSchema>[]> {
+    async list(): Promise<z.infer<TSchema>[]> {
         await this.pull(this.repoPath)
 
         try {
             const files = await fs.promises.readdir(this.path) as string[]
-            console.log({ files })
             const items = await Promise.all(
                 files
                     .filter(f => f.endsWith('.json'))
@@ -140,7 +140,7 @@ export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
     }
 
     async query(opts: QueryOptions<z.infer<TSchema>> = {}): Promise<z.infer<TSchema>[]> {
-        let results = await this.findMany()
+        let results = await this.list()
 
         if (opts.where) {
             results = results.filter(item => matchesWhere(item, opts.where!))
@@ -173,27 +173,57 @@ export class FileDB<TSchema extends z.ZodTypeAny> extends Git {
         return results
     }
 
-    async write(id: string, data: z.infer<TSchema>): Promise<void> {
-        const filepath = this.getFilePath(id)
+    async create<T extends z.infer<TSchema>>(data: Omit<T, 'id'>, scope?: string): Promise<T> {
+        const validated = this.schema.parse({
+            id: createId(),
+            ...data
+        })
+        const filepath = this.getFilePath(validated.id)
         await fs.promises.mkdir(this.path, { recursive: true })
-        const validated = this.schema.parse(data)
         await fs.promises.writeFile(filepath, JSON.stringify(validated, null, 2))
 
         await this.add(this.repoPath, filepath)
         await this.commit(this.repoPath, {
             type: 'feat',
+            scope,
             message: `added ${path.relative(this.repoPath, filepath)}`
         })
         await this.push(this.repoPath)
+
+        return validated
     }
 
-    async delete(id: string): Promise<void> {
+    async update<T extends z.infer<TSchema>>(id: string, data: Partial<T>, scope?: string): Promise<T> {
+        await this.pull(this.repoPath)
+
+        const filepath = this.getFilePath(id)
+        await fs.promises.mkdir(this.path, { recursive: true })
+        const validated = this.schema.parse(data)
+        const updated = {
+            ...validated,
+            ...data
+        }
+        await fs.promises.writeFile(filepath, JSON.stringify(updated, null, 2))
+
+        await this.add(this.repoPath, filepath)
+        await this.commit(this.repoPath, {
+            type: 'fix',
+            scope,
+            message: `updated ${path.relative(this.repoPath, filepath)}`
+        })
+        await this.push(this.repoPath)
+
+        return updated
+    }
+
+    async delete(id: string, scope?: string): Promise<void> {
         const filepath = this.getFilePath(id)
         await fs.promises.unlink(filepath)
 
         await this.add(this.repoPath, filepath)
         await this.commit(this.repoPath, {
             type: 'chore',
+            scope,
             message: `deleted ${path.relative(this.repoPath, filepath)}`,
         })
         await this.push(this.repoPath)

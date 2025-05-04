@@ -37,6 +37,8 @@ export class Git {
             dir,
             url,
             depth: 1,
+            singleBranch: true,
+            ref: this.options.git.branch || 'main',
             onAuth: () => ({
                 username: this.options.git.user,
                 password: this.options.git.token

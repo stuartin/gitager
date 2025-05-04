@@ -9,9 +9,6 @@ catalogs:
     eslint:
       specifier: ^9.25.1
       version: 9.25.1
-    hono:
-      specifier: ^4.7.8
-      version: 4.7.8
     zod:
       specifier: ^3.24.3
       version: 3.24.3
@@ -35,9 +32,6 @@ importers:
       '@gitager/core':
         specifier: 'workspace:'
         version: link:../../packages/core
-      '@hono/node-server':
-        specifier: ^1.14.1
-        version: 1.14.1(hono@4.7.8)
     devDependencies:
       '@gitager/config-eslint':
         specifier: 'workspace:'
@@ -83,15 +77,21 @@ importers:
 
   packages/core:
     dependencies:
-      '@hono/zod-validator':
-        specifier: ^0.5.0
-        version: 0.5.0(hono@4.7.8)(zod@3.24.3)
+      '@orpc/contract':
+        specifier: ^1.1.0
+        version: 1.1.1
+      '@orpc/openapi':
+        specifier: ^1.1.0
+        version: 1.1.1
+      '@orpc/server':
+        specifier: ^1.1.0
+        version: 1.1.1
+      '@orpc/zod':
+        specifier: ^1.1.0
+        version: 1.1.1(@orpc/contract@1.1.1)(@orpc/server@1.1.1)(zod@3.24.3)
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
-      hono:
-        specifier: 'catalog:'
-        version: 4.7.8
       isomorphic-git:
         specifier: ^1.30.1
         version: 1.30.1
@@ -649,18 +649,6 @@ packages:
     resolution: {integrity: sha512-ZAoA40rNMPwSm+AeHpCq8STiNAwzWLJuP8Xv4CHIc9wv/PSuExjMrmjfYNj682vW0OOiZ1HKxzvjQr9XZIisQA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@hono/node-server@1.14.1':
-    resolution: {integrity: sha512-vmbuM+HPinjWzPe7FFPWMMQMsbKE9gDPhaH0FFdqbGpkT5lp++tcWDTxwBl5EgS5y6JVgIaCdjeHRfQ4XRBRjQ==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4
-
-  '@hono/zod-validator@0.5.0':
-    resolution: {integrity: sha512-ds5bW6DCgAnNHP33E3ieSbaZFd5dkV52ZjyaXtGoR06APFrCtzAsKZxTHwOrJNBdXsi0e5wNwo5L4nVEVnJUdg==}
-    peerDependencies:
-      hono: '>=3.9.0'
-      zod: ^3.19.1
-
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -735,6 +723,40 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@orpc/client@1.1.1':
+    resolution: {integrity: sha512-HgAZTco32DLBazAvzbpg2rE+9o7FfkenDLAnMFlejDewxRRmbRbXNo2/jnv9enIftZBoqcgDqt5JJpOdbGoqOQ==}
+
+  '@orpc/contract@1.1.1':
+    resolution: {integrity: sha512-0Bj9x2r6y7erCjt/em8CuX1VTEp3t3ROCwdkFUsMoLKegAkqPmi9xy7ePBqCXKmksUn8FlQG5xhZBcqd61e6eA==}
+
+  '@orpc/openapi-client@1.1.1':
+    resolution: {integrity: sha512-MV2JzAkzxajyn1Q4R7c7LiW65DUxEaOu+uLMa10kUoCZvjpU5iG4Aesy7FTZHLDLGL7ulX5zIy9XCkTV6Vah5w==}
+
+  '@orpc/openapi@1.1.1':
+    resolution: {integrity: sha512-AzwMs/2Ufk28r1VkQvgESZYpigeA/LUzcDYOri9N6RMoL69fl61cR0FYnBoEQXZgaGIVHKCNAyM6DNxGmnC8NA==}
+
+  '@orpc/server@1.1.1':
+    resolution: {integrity: sha512-fW/yXykQEUy06XCXd8zKaxBs+Pkw3KwjdeojIR8Lckn3eyDmV0vL3lT5F46zgN5N6h//I4EnhwaDbdnjhQS7aQ==}
+
+  '@orpc/shared@1.1.1':
+    resolution: {integrity: sha512-vQ19dqgxMO211nsyl7TXjclqxejh+wjyXyqGxca8xcP36gV5in0j3csWt6B0phLFCRuwL1msIAM7o9YLSPpiAw==}
+
+  '@orpc/standard-server-fetch@1.1.1':
+    resolution: {integrity: sha512-4Safmg+5mXJMVxqfWRn9SqoZy+QWSM+RpxSl1jvKS5ctCBVHXUAnOKh0DI4Nn7GsSym9tFo/0k89Mr7t9KCSVA==}
+
+  '@orpc/standard-server-node@1.1.1':
+    resolution: {integrity: sha512-nddJ5gOoN6NL36ygiGR2Ut3nMoIqNsg7km/MQsvUG9eOeJIQx00piOxzjSJGN/HFwqMHUjJ8yq2rDaUsUnRPZg==}
+
+  '@orpc/standard-server@1.1.1':
+    resolution: {integrity: sha512-lMhT0y1j+s9dqO13P6h+Dv6rwjxH9mwqQ8y/KRDnhhnzZ7Xq+4ur1SPNWYPi643IFua1GlvcM8jPFnk7BZrVaw==}
+
+  '@orpc/zod@1.1.1':
+    resolution: {integrity: sha512-VeWCLZto/z3Rbw5CEQIj/uW7mURn9H9EVP1DBbB/CiFx3oSZDA1eqwu0O27vS7O0JOKD9aL3qbvRqOYDD2U2UQ==}
+    peerDependencies:
+      '@orpc/contract': 1.1.1
+      '@orpc/server': 1.1.1
+      zod: ^3.24.2
 
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
@@ -846,6 +868,9 @@ packages:
     resolution: {integrity: sha512-yAkUOkIKZlK5dl7u6dg897doBgLXmUHhIINM2c+sND3DZwnrdQkkSiDh7N75Ll4mM4dxSkYfXqU9fW3lLkMFug==}
     cpu: [x64]
     os: [win32]
+
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
   '@stylistic/eslint-plugin@4.2.0':
     resolution: {integrity: sha512-8hXezgz7jexGHdo5WN6JBEIPHCSFyyU4vgbxevu4YLVS5vl+sxqAAGyXSzfNDyR6xMNSH5H1x67nsXcYMOHtZA==}
@@ -1760,10 +1785,6 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.7.8:
-    resolution: {integrity: sha512-PCibtFdxa7/Ldud9yddl1G81GjYaeMYYTq4ywSaNsYbB1Lug4mwtOMJf2WXykL0pntYwmpRJeOI3NmoDgD+Jxw==}
-    engines: {node: '>=16.9.0'}
-
   hosted-git-info@7.0.2:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
     engines: {node: ^16.14.0 || >=18.0.0}
@@ -1890,6 +1911,9 @@ packages:
 
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
+
+  json-schema-typed@8.0.1:
+    resolution: {integrity: sha512-XQmWYj2Sm4kn4WeTYvmpKEbyPsL7nBsb647c7pMe6l02/yx2+Jfc4dT6UZkEXnIUb5LhD55r2HPsJ1milQ4rDg==}
 
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
@@ -2207,6 +2231,9 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
+  openapi-types@12.1.3:
+    resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -2352,6 +2379,10 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  radash@12.1.0:
+    resolution: {integrity: sha512-b0Zcf09AhqKS83btmUeYBS8tFK7XL2e3RvLmZcm0sTdF1/UUlHSsjXdCcWNxe7yfmAlPve5ym0DmKGtTzP6kVQ==}
+    engines: {node: '>=14.18.0'}
+
   read-package-up@11.0.0:
     resolution: {integrity: sha512-MbgfoNPANMdb4oRBNg5eqLbB2t2r+o5Ua1pNt8BqGp4I0FJZhuVSOj3PaBPni4azWuSzEdNn2evevzVmEk1ohQ==}
     engines: {node: '>=18'}
@@ -2400,6 +2431,9 @@ packages:
     resolution: {integrity: sha512-thI8kNc02yNvnmJp8dr3fNWJ9tCONDhp6TV35X6HkKGGs9E6q7YWCHbe5vKiTa7TAiNcFEmXKj3X/pG2b3ci0g==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  rou3@0.6.1:
+    resolution: {integrity: sha512-mqyxhSO0LLAa/lwNhH3329NEbRFJEHpZGIqr0cWQTtQEwqFMpf0a15cGw3kh9nil1oufh97Qhx4KWsy++0yn4g==}
 
   rrweb-cssom@0.8.0:
     resolution: {integrity: sha512-guoltQEx+9aMf2gDZ0s62EcV8lsXR+0w8915TC3ITdn2YueuNjdAYh/levpU9nFaoChh9RUS5ZdQMrKfVEN9tw==}
@@ -2652,10 +2686,6 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
-  type-fest@4.34.1:
-    resolution: {integrity: sha512-6kSc32kT0rbwxD6QL1CYe8IqdzN/J/ILMrNK+HMQCKH3insCDRY/3ITb0vcBss0a3t72fzh2YSzj8ko1HgwT3g==}
-    engines: {node: '>=16'}
-
   type-fest@4.40.0:
     resolution: {integrity: sha512-ABHZ2/tS2JkvH1PEjxFDTUWC8dB5OsIGZP4IFLhR293GqT5Y5qB1WwL2kMPYhQW9DVgVD8Hd7I8gjwPIf5GFkw==}
     engines: {node: '>=16'}
@@ -2825,6 +2855,9 @@ packages:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
     engines: {node: '>=8'}
     hasBin: true
+
+  wildcard-match@5.1.4:
+    resolution: {integrity: sha512-wldeCaczs8XXq7hj+5d/F38JE2r7EXgb6WQDM84RVwxy81T/sxB5e9+uZLK9Q9oNz1mlvjut+QtvgaOQFPVq/g==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -3371,15 +3404,6 @@ snapshots:
       '@eslint/core': 0.13.0
       levn: 0.4.1
 
-  '@hono/node-server@1.14.1(hono@4.7.8)':
-    dependencies:
-      hono: 4.7.8
-
-  '@hono/zod-validator@0.5.0(hono@4.7.8)(zod@3.24.3)':
-    dependencies:
-      hono: 4.7.8
-      zod: 3.24.3
-
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -3451,6 +3475,75 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.18.0
 
+  '@orpc/client@1.1.1':
+    dependencies:
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+      '@orpc/standard-server-fetch': 1.1.1
+
+  '@orpc/contract@1.1.1':
+    dependencies:
+      '@orpc/client': 1.1.1
+      '@orpc/shared': 1.1.1
+      '@standard-schema/spec': 1.0.0
+
+  '@orpc/openapi-client@1.1.1':
+    dependencies:
+      '@orpc/client': 1.1.1
+      '@orpc/contract': 1.1.1
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+
+  '@orpc/openapi@1.1.1':
+    dependencies:
+      '@orpc/client': 1.1.1
+      '@orpc/contract': 1.1.1
+      '@orpc/openapi-client': 1.1.1
+      '@orpc/server': 1.1.1
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+      json-schema-typed: 8.0.1
+      openapi-types: 12.1.3
+      rou3: 0.6.1
+
+  '@orpc/server@1.1.1':
+    dependencies:
+      '@orpc/client': 1.1.1
+      '@orpc/contract': 1.1.1
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+      '@orpc/standard-server-fetch': 1.1.1
+      '@orpc/standard-server-node': 1.1.1
+
+  '@orpc/shared@1.1.1':
+    dependencies:
+      radash: 12.1.0
+      type-fest: 4.40.0
+
+  '@orpc/standard-server-fetch@1.1.1':
+    dependencies:
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+
+  '@orpc/standard-server-node@1.1.1':
+    dependencies:
+      '@orpc/shared': 1.1.1
+      '@orpc/standard-server': 1.1.1
+
+  '@orpc/standard-server@1.1.1':
+    dependencies:
+      '@orpc/shared': 1.1.1
+
+  '@orpc/zod@1.1.1(@orpc/contract@1.1.1)(@orpc/server@1.1.1)(zod@3.24.3)':
+    dependencies:
+      '@orpc/contract': 1.1.1
+      '@orpc/openapi': 1.1.1
+      '@orpc/server': 1.1.1
+      '@orpc/shared': 1.1.1
+      escape-string-regexp: 5.0.0
+      wildcard-match: 5.1.4
+      zod: 3.24.3
+
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
       '@noble/hashes': 1.8.0
@@ -3518,6 +3611,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.39.0':
     optional: true
+
+  '@standard-schema/spec@1.0.0': {}
 
   '@stylistic/eslint-plugin@4.2.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
@@ -4627,8 +4722,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.7.8: {}
-
   hosted-git-info@7.0.2:
     dependencies:
       lru-cache: 10.4.3
@@ -4774,6 +4867,8 @@ snapshots:
   json-buffer@3.0.1: {}
 
   json-schema-traverse@0.4.1: {}
+
+  json-schema-typed@8.0.1: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
@@ -5256,6 +5351,8 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
+  openapi-types@12.1.3: {}
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -5383,18 +5480,20 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
+  radash@12.1.0: {}
+
   read-package-up@11.0.0:
     dependencies:
       find-up-simple: 1.0.1
       read-pkg: 9.0.1
-      type-fest: 4.34.1
+      type-fest: 4.40.0
 
   read-pkg@9.0.1:
     dependencies:
       '@types/normalize-package-data': 2.4.4
       normalize-package-data: 6.0.2
       parse-json: 8.3.0
-      type-fest: 4.34.1
+      type-fest: 4.40.0
       unicorn-magic: 0.1.0
 
   readable-stream@3.6.2:
@@ -5456,6 +5555,8 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.39.0
       fsevents: 2.3.3
     optional: true
+
+  rou3@0.6.1: {}
 
   rrweb-cssom@0.8.0:
     optional: true
@@ -5711,8 +5812,6 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
-  type-fest@4.34.1: {}
-
   type-fest@4.40.0: {}
 
   typescript-eslint@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.8.3):
@@ -5917,6 +6016,8 @@ snapshots:
       siginfo: 2.0.0
       stackback: 0.0.2
     optional: true
+
+  wildcard-match@5.1.4: {}
 
   word-wrap@1.2.5: {}
 
