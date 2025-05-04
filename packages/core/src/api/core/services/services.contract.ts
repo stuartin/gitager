@@ -5,7 +5,7 @@ import { CursorPaginationSchema } from '../../../lib/orpc/schemas';
 
 export const ServicesSchema = z.object({
     id: z.string().cuid2().describe('The service id'),
-    name: z.string().describe('Thename of the service'),
+    name: z.string().describe('The name of the service'),
 });
 
 const oc = createContract()
