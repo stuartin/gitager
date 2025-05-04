@@ -1,4 +1,5 @@
 import { createContract } from "../../lib/orpc"
+import { jobsContract } from "./jobs/jobs.contract"
 import { servicesContract } from "./services/services.contract"
 
 export const coreContract = createContract()
@@ -6,6 +7,7 @@ export const coreContract = createContract()
     .prefix("/core")
     .router({
         core: {
-            services: servicesContract
+            services: servicesContract,
+            jobs: jobsContract
         }
     })
