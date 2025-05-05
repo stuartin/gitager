@@ -65,8 +65,17 @@ export class Git {
     }
 
     protected async add(dir: string, filepath: string) {
-        const relativePath = path.relative(dir, filepath)
+        const relativePath = this.pathRel(dir, filepath)
         await git.add({
+            fs,
+            dir,
+            filepath: relativePath,
+        })
+    }
+
+    protected async remove(dir: string, filepath: string) {
+        const relativePath = this.pathRel(dir, filepath)
+        await git.remove({
             fs,
             dir,
             filepath: relativePath,
@@ -102,5 +111,25 @@ export class Git {
                 password: this.options.token
             })
         })
+    }
+
+    protected async log(dir: string, branch?: string) {
+        return await git.log({
+            fs,
+            dir,
+            depth: 5,
+            ref: branch || this.defaultBranch
+        })
+    }
+
+    private async logFileStatus(dir: string, filepath: string) {
+        let status = await git.status({ fs, dir, filepath })
+        console.log('status:', { filepath, status })
+    }
+
+    protected pathRel(dir: string, filepath: string) {
+        // isomorphic git always expected POSIX paths
+        // i.e folder/file.ext NOT folder\\file.ext
+        return path.relative(dir, filepath).replace(/\\/g, '/');
     }
 }

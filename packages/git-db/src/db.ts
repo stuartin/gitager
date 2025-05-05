@@ -188,7 +188,7 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
             {
                 type: 'feat',
                 scope,
-                message: `added ${path.relative(this.repoPath, filepath)}`
+                message: `added ${this.pathRel(this.repoPath, filepath)}`
             },
             branch
         )
@@ -201,12 +201,12 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         await this.pull(this.repoPath, branch)
 
         const filepath = this.getFilePath(id)
-        await fs.promises.mkdir(this.path, { recursive: true })
-        const validated = this.schema.parse(data)
-        const updated = {
-            ...validated,
+        const raw = await fs.promises.readFile(filepath, 'utf-8') as string
+        const updated = this.schema.parse({
+            ...JSON.parse(raw),
             ...data
-        }
+        })
+
         await fs.promises.writeFile(filepath, JSON.stringify(updated, null, 2))
 
         await this.add(this.repoPath, filepath)
@@ -215,7 +215,7 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
             {
                 type: 'fix',
                 scope,
-                message: `updated ${path.relative(this.repoPath, filepath)}`
+                message: `updated ${this.pathRel(this.repoPath, filepath)}`
             },
             branch
         )
@@ -228,13 +228,13 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         const filepath = this.getFilePath(id)
         await fs.promises.unlink(filepath)
 
-        await this.add(this.repoPath, filepath)
+        await this.remove(this.repoPath, filepath)
         await this.commit(
             this.repoPath,
             {
                 type: 'chore',
                 scope,
-                message: `deleted ${path.relative(this.repoPath, filepath)}`,
+                message: `deleted ${this.pathRel(this.repoPath, filepath)}`,
             },
             branch
         )
