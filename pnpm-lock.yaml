@@ -101,6 +101,9 @@ importers:
       memfs:
         specifier: ^4.17.0
         version: 4.17.0
+      poolifier:
+        specifier: ^4.4.5
+        version: 4.4.5
       zod:
         specifier: 'catalog:'
         version: 3.24.3
@@ -2347,6 +2350,10 @@ packages:
 
   pnpm-workspace-yaml@0.3.1:
     resolution: {integrity: sha512-3nW5RLmREmZ8Pm8MbPsO2RM+99RRjYd25ynj3NV0cFsN7CcEl4sDFzgoFmSyduFwxFQ2Qbu3y2UdCh6HlyUOeA==}
+
+  poolifier@4.4.5:
+    resolution: {integrity: sha512-4DxdX11+x1D3/zBuNqblFPYwngPKnXVEbhO1cS4T/8ogCwbWp8CS6kp2zm9uJHVbQh6OOaWuVDNiqbr/Sq/YPA==}
+    engines: {node: '>=18.0.0', pnpm: '>=9.0.0'}
 
   postcss-load-config@3.1.4:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
@@ -5462,6 +5469,8 @@ snapshots:
   pnpm-workspace-yaml@0.3.1:
     dependencies:
       yaml: 2.7.0
+
+  poolifier@4.4.5: {}
 
   postcss-load-config@3.1.4(postcss@8.5.3):
     dependencies:
