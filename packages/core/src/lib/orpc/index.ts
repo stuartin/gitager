@@ -7,13 +7,15 @@ import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "./errors";
 import type { GitagerOptions } from "../..";
 import { createServer as createNodeServer } from 'node:http'
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
+import type { JobManager } from "../job-manager";
 
 type InitialContext = {
-    options: GitagerOptions
+    options: GitagerOptions,
+    jobManager: JobManager
 }
 
-export function createServer<T extends AnyRouter>(options: GitagerOptions, router: T) {
-    const handler = new OpenAPIHandler(router, {
+export function createServer<T extends AnyRouter>(context: InitialContext, router: T) {
+    const handler = new OpenAPIHandler<InitialContext>(router, {
         interceptors: [
             onError((error) => {
                 console.error(error);
@@ -38,7 +40,7 @@ export function createServer<T extends AnyRouter>(options: GitagerOptions, route
 
     return createNodeServer(async (req, res) => {
         const result = await handler.handle(req, res, {
-            context: { options }
+            context
         })
 
         if (!result.matched) {
