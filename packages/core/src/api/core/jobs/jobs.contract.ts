@@ -9,9 +9,9 @@ export const JobsSchema = z.object({
     name: z.string().describe('The name of the job'),
     type: z.enum(['plop']).describe("The type of job"),
     cron: z.string().default("*/5 * * * *").describe("A cron string for when the job should run"),
-    inputs: z.record(z.string()).optional().describe("Any inputs that the job should receive"),
-    outputs: z.record(z.string()).optional().describe("Any outputs that the job will end with"),
-    status: z.enum(["pending", "in-progress", "completed", "error"]).default("pending").describe("The current status of the job")
+    inputs: z.record(z.string()).default({}).optional().describe("Any inputs that the job should receive"),
+    outputs: z.record(z.string()).default({}).optional().describe("Any outputs that the job will end with"),
+    status: z.enum(["pending", "in-progress", "finished", "failed"]).default("pending").describe("The current status of the job")
 });
 
 const oc = createContract()
