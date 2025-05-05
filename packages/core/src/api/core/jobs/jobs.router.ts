@@ -1,23 +1,13 @@
-import { GitDB } from '@gitager/git-db/db';
 import { createRouter } from '../../../lib/orpc';
 import { requireAuth } from '../../../lib/orpc/middleware/require-auth';
 import { jobsContract, JobsSchema } from './jobs.contract';
 
 const os = createRouter(jobsContract)
-    .use(async ({ context, next }) => {
-        const db = new GitDB("/core", "/jobs", JobsSchema, context.options.git)
-        await db.init()
-
-        return next({
-            context: { db }
-        })
-    })
-
 export const jobsRouter = os
     .router({
         get: os.get.handler(async ({ input, context, errors }) => {
-            const { db } = context;
-            const res = await db.get(input.id)
+            const { jobManager } = context;
+            const res = await jobManager.get(input.id)
 
             if (!res)
                 throw errors.NOT_FOUND();
@@ -26,23 +16,15 @@ export const jobsRouter = os
         }),
 
         list: os.list.handler(async ({ input, context }) => {
-            const { cursor, order, limit } = input;
-            const { db } = context;
-
-            const res = await db.query({
-                where: cursor
-                    ? order === "asc" ? { id: { gt: "id" } } : { id: { lt: "id" } }
-                    : undefined,
-                limit,
-                orderBy: { id: order },
-            });
+            const { jobManager } = context;
+            const res = await jobManager.list(input);
 
             return res;
         }),
 
         create: os.create.use(requireAuth).handler(async ({ input, context, errors }) => {
-            const { db } = context;
-            const res = await db.create(input, 'core')
+            const { jobManager } = context;
+            const res = await jobManager.create(input)
 
             if (!res)
                 throw errors.INTERNAL_SERVER_ERROR();
@@ -51,8 +33,8 @@ export const jobsRouter = os
         }),
 
         update: os.update.use(requireAuth).handler(async ({ input, context, errors }) => {
-            const { db } = context;
-            const res = await db.update(input.id, input, 'core')
+            const { jobManager } = context;
+            const res = await jobManager.update(input.id, input)
 
             if (!res)
                 throw errors.NOT_FOUND();
@@ -61,7 +43,7 @@ export const jobsRouter = os
         }),
 
         delete: os.delete.use(requireAuth).handler(async ({ input, context }) => {
-            const { db } = context;
-            await db.delete(input.id, 'core');
+            const { jobManager } = context;
+            await jobManager.delete(input.id);
         }),
     });
