@@ -5,7 +5,7 @@ import { servicesContract, ServicesSchema } from './services.contract';
 
 const os = createRouter(servicesContract)
     .use(async ({ context, next }) => {
-        const db = new GitDB("/core", "/services", ServicesSchema, context.options.git)
+        const db = new GitDB(context.options.git, ServicesSchema, "/core", "/services")
         await db.init()
 
         return next({

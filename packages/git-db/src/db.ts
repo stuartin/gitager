@@ -93,10 +93,10 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
     private path: string
 
     constructor(
-        private repoPath: string,
-        private subPath: string = '/',
+        options: GitOptions,
         private schema: TSchema,
-        options: GitOptions
+        private repoPath: string,
+        private subPath: string = '/'
     ) {
         super(options)
         this.path = path.join(this.repoPath, this.subPath)
@@ -110,8 +110,8 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         return path.join(this.path, `${id}.json`)
     }
 
-    async get(id: string): Promise<z.infer<TSchema> | null> {
-        await this.pull(this.repoPath)
+    async get(id: string, branch?: string): Promise<z.infer<TSchema> | null> {
+        await this.pull(this.repoPath, branch)
 
         try {
             const raw = await fs.promises.readFile(this.getFilePath(id), 'utf-8') as string
@@ -122,8 +122,8 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         }
     }
 
-    async list(): Promise<z.infer<TSchema>[]> {
-        await this.pull(this.repoPath)
+    async list(branch?: string): Promise<z.infer<TSchema>[]> {
+        await this.pull(this.repoPath, branch)
 
         try {
             const files = await fs.promises.readdir(this.path) as string[]
@@ -139,8 +139,8 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         }
     }
 
-    async query(opts: QueryOptions<z.infer<TSchema>> = {}): Promise<z.infer<TSchema>[]> {
-        let results = await this.list()
+    async query(opts: QueryOptions<z.infer<TSchema>> = {}, branch?: string): Promise<z.infer<TSchema>[]> {
+        let results = await this.list(branch)
 
         if (opts.where) {
             results = results.filter(item => matchesWhere(item, opts.where!))
@@ -173,7 +173,7 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         return results
     }
 
-    async create<T extends z.infer<TSchema>>(data: Omit<T, 'id'>, scope?: string): Promise<T> {
+    async create<T extends z.infer<TSchema>>(data: Omit<T, 'id'>, scope?: string, branch?: string,): Promise<T> {
         const validated = this.schema.parse({
             id: createId(),
             ...data
@@ -183,18 +183,22 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         await fs.promises.writeFile(filepath, JSON.stringify(validated, null, 2))
 
         await this.add(this.repoPath, filepath)
-        await this.commit(this.repoPath, {
-            type: 'feat',
-            scope,
-            message: `added ${path.relative(this.repoPath, filepath)}`
-        })
-        await this.push(this.repoPath)
+        await this.commit(
+            this.repoPath,
+            {
+                type: 'feat',
+                scope,
+                message: `added ${path.relative(this.repoPath, filepath)}`
+            },
+            branch
+        )
+        await this.push(this.repoPath, branch)
 
         return validated
     }
 
-    async update<T extends z.infer<TSchema>>(id: string, data: Partial<T>, scope?: string): Promise<T> {
-        await this.pull(this.repoPath)
+    async update<T extends z.infer<TSchema>>(id: string, data: Partial<T>, scope?: string, branch?: string): Promise<T> {
+        await this.pull(this.repoPath, branch)
 
         const filepath = this.getFilePath(id)
         await fs.promises.mkdir(this.path, { recursive: true })
@@ -206,26 +210,34 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
         await fs.promises.writeFile(filepath, JSON.stringify(updated, null, 2))
 
         await this.add(this.repoPath, filepath)
-        await this.commit(this.repoPath, {
-            type: 'fix',
-            scope,
-            message: `updated ${path.relative(this.repoPath, filepath)}`
-        })
-        await this.push(this.repoPath)
+        await this.commit(
+            this.repoPath,
+            {
+                type: 'fix',
+                scope,
+                message: `updated ${path.relative(this.repoPath, filepath)}`
+            },
+            branch
+        )
+        await this.push(this.repoPath, branch)
 
         return updated
     }
 
-    async delete(id: string, scope?: string): Promise<void> {
+    async delete(id: string, scope?: string, branch?: string): Promise<void> {
         const filepath = this.getFilePath(id)
         await fs.promises.unlink(filepath)
 
         await this.add(this.repoPath, filepath)
-        await this.commit(this.repoPath, {
-            type: 'chore',
-            scope,
-            message: `deleted ${path.relative(this.repoPath, filepath)}`,
-        })
-        await this.push(this.repoPath)
+        await this.commit(
+            this.repoPath,
+            {
+                type: 'chore',
+                scope,
+                message: `deleted ${path.relative(this.repoPath, filepath)}`,
+            },
+            branch
+        )
+        await this.push(this.repoPath, branch)
     }
 }

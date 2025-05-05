@@ -21,6 +21,8 @@ export const commits: Record<CommitType, string> = {
 };
 
 export class Git {
+    protected defaultBranch: string
+
     private author = {
         name: 'gitager',
         email: 'bot@gitager.com'
@@ -28,9 +30,11 @@ export class Git {
 
     constructor(
         protected options: GitOptions
-    ) { }
+    ) {
+        this.defaultBranch = this.options.defaultBranch || 'main'
+    }
 
-    protected async clone(dir: string, url: string) {
+    protected async clone(dir: string, url: string, branch?: string) {
         await git.clone({
             fs,
             http,
@@ -38,7 +42,7 @@ export class Git {
             url,
             depth: 1,
             singleBranch: true,
-            ref: this.options.branch || 'main',
+            ref: branch || this.defaultBranch,
             onAuth: () => ({
                 username: this.options.user,
                 password: this.options.token
@@ -46,12 +50,13 @@ export class Git {
         })
     }
 
-    protected async pull(dir: string): Promise<void> {
+    protected async pull(dir: string, branch?: string): Promise<void> {
         await git.pull({
             fs,
             http,
             dir,
             author: this.author,
+            ref: branch || this.defaultBranch,
             onAuth: () => ({
                 username: this.options.user,
                 password: this.options.token
@@ -72,23 +77,26 @@ export class Git {
         dir: string,
         options: {
             type: CommitType
-            scope?: string
             message: string,
-        }
+            scope?: string
+        },
+        branch?: string
     ) {
         await git.commit({
             fs,
             dir,
+            ref: branch || this.defaultBranch,
             message: `${commits[options.type]} ${options.type}${options.scope ? `(${options.scope}):` : ':'} ${options.message}`,
             author: this.author
         })
     }
 
-    protected async push(dir: string) {
+    protected async push(dir: string, branch?: string) {
         await git.push({
             fs,
             http,
             dir,
+            ref: branch || this.defaultBranch,
             onAuth: () => ({
                 username: this.options.user,
                 password: this.options.token
