@@ -1,6 +1,23 @@
-export type GitOptions = {
-    url: string;
-    token: string;
-    user?: string; // should be oauth2 if using github fine grained tokens
-    branch?: string // defaults to main
+export interface GitOptions {
+  /**
+   * The url pointing to the git repository
+   */
+  url: string;
+
+  /**
+   * The token to use to authenticate with git
+   */
+  token: string;
+
+  /**
+   * The username to use when authenticating with git.
+   * For GitHub fine grained tokens, use oauth2
+   */
+  user?: string;
+
+  /**
+   * What the default branch should be
+   * @default main
+   */
+  defaultBranch?: string;
 }

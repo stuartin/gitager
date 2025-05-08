@@ -4,7 +4,7 @@ const _SECURITY = [
   {
     bearerAuth: [],
   },
-]
+];
 
 export const UNAUTHORIZED = oo.spec(
   {},
