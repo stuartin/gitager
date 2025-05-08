@@ -19,5 +19,5 @@ export function gitager(options: GitagerOptions) {
   const api = createAPI(options);
   const jobManager = new JobManager(options, [apiTask]);
 
-  return createServer({ options, jobManager }, api);
+  return createServer(api, { options, jobManager });
 }

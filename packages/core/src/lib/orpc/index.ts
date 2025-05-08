@@ -16,7 +16,7 @@ interface InitialContext {
   jobManager: JobManager;
 }
 
-export function createServer<T extends AnyRouter>(context: InitialContext, router: T) {
+export function createServer<T extends AnyRouter>(router: T, context: InitialContext) {
   const handler = new OpenAPIHandler<InitialContext>(router, {
     interceptors: [
       onError((error) => {
