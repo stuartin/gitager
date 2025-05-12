@@ -2,8 +2,7 @@
   "name": "@gitager/git-db",
   "type": "module",
   "exports": {
-    "./db": "./src/db.ts",
-    "./types": "./src/types.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "lint": "eslint ."

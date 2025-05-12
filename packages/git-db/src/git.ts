@@ -1,8 +1,32 @@
-import type { GitOptions } from './types';
 import path from 'node:path';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import { fs } from 'memfs';
+
+export type GitOptions = {
+  /**
+   * The url pointing to the git repository
+   */
+  url: string;
+
+  /**
+   * The token to use to authenticate with git
+   */
+  token: string;
+
+  /**
+   * The username to use when authenticating with git.
+   * For GitHub fine grained tokens, use oauth2
+   */
+  user?: string;
+
+  /**
+   * What the default branch should be
+   * @default main
+   */
+  defaultBranch?: string;
+}
+
 
 type CommitType =
   | 'feat'
@@ -32,20 +56,23 @@ export const commits: Record<CommitType, string> = {
 };
 
 export class Git {
-  protected defaultBranch: string;
+  #options: GitOptions
 
-  private author = {
+  #author = {
     name: 'gitager',
     email: 'bot@gitager.com',
   };
 
   constructor(
-    protected options: GitOptions,
+    options: GitOptions,
   ) {
-    this.defaultBranch = this.options.defaultBranch || 'main';
+    this.#options = {
+      ...options,
+      defaultBranch: options.defaultBranch || 'main'
+    }
   }
 
-  protected async clone(dir: string, url: string, branch?: string) {
+  protected async clone(dir: string, url: string = this.#options.url, branch?: string) {
     await git.clone({
       fs,
       http,
@@ -53,10 +80,10 @@ export class Git {
       url,
       depth: 1,
       singleBranch: true,
-      ref: branch || this.defaultBranch,
+      ref: branch || this.#options.defaultBranch,
       onAuth: () => ({
-        username: this.options.user,
-        password: this.options.token,
+        username: this.#options.user,
+        password: this.#options.token,
       }),
     });
   }
@@ -66,11 +93,11 @@ export class Git {
       fs,
       http,
       dir,
-      author: this.author,
-      ref: branch || this.defaultBranch,
+      author: this.#author,
+      ref: branch || this.#options.defaultBranch,
       onAuth: () => ({
-        username: this.options.user,
-        password: this.options.token,
+        username: this.#options.user,
+        password: this.#options.token,
       }),
     });
   }
@@ -105,11 +132,11 @@ export class Git {
     await git.commit({
       fs,
       dir,
-      ref: branch || this.defaultBranch,
+      ref: branch || this.#options.defaultBranch,
       message: `${commits[options.type]} ${options.type}${options.scope
         ? `(${options.scope}):`
         : ':'} ${options.message}`,
-      author: this.author,
+      author: this.#author,
     });
   }
 
@@ -118,10 +145,10 @@ export class Git {
       fs,
       http,
       dir,
-      ref: branch || this.defaultBranch,
+      ref: branch || this.#options.defaultBranch,
       onAuth: () => ({
-        username: this.options.user,
-        password: this.options.token,
+        username: this.#options.user,
+        password: this.#options.token,
       }),
     });
   }
@@ -131,7 +158,7 @@ export class Git {
       fs,
       dir,
       depth: 5,
-      ref: branch || this.defaultBranch,
+      ref: branch || this.#options.defaultBranch,
     });
   }
 

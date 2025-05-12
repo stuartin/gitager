@@ -1,13 +1,36 @@
 import type { z } from 'zod';
-import type { GitOptions } from './types';
 import path from 'node:path';
 import { createId } from '@paralleldrive/cuid2';
 import { fs } from 'memfs';
-import { Git } from './git';
+import { Git, type GitOptions } from './git';
 
-export type Primitive = string | number | boolean;
+export type GitDBOptions = {
+  /**
+   * The git configuration options
+   */
+  git: GitOptions;
 
-export interface FilterOps<T extends Primitive> {
+  /**
+ * The zod schema to use when validating/querying the data
+ */
+  schema: z.AnyZodObject,
+
+  /**
+ * The virtual folder to clone the repository to. Must be unique per repository
+ */
+  basePath: `/${string}`,
+
+  /**
+ * A sub path to use as the root folder
+ * @default "/"
+ */
+  subPath: `/${string}`
+}
+
+
+type Primitive = string | number | boolean;
+
+interface FilterOps<T extends Primitive> {
   equals?: T;
   not?: T;
   in?: T[];
@@ -22,7 +45,7 @@ export interface FilterOps<T extends Primitive> {
   fuzzy?: string;
 }
 
-export type Where<T> = {
+type Where<T> = {
   [K in keyof T]?: T[K] extends Primitive ? FilterOps<T[K]> : never
 } & {
   AND?: Where<T>[];
@@ -105,32 +128,32 @@ function matchesWhere<T>(item: T, where: Where<T>): boolean {
 }
 
 export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
-  private path: string;
+
+  #options: GitDBOptions
+  #path: string;
 
   constructor(
-    options: GitOptions,
-    private schema: TSchema,
-    private repoPath: `/${string}`,
-    private subPath: `/${string}` = '/',
+    options: GitDBOptions
   ) {
-    super(options);
-    this.path = path.join(this.repoPath, this.subPath);
+    super(options.git);
+    this.#options = options
+    this.#path = path.join(options.basePath, options.subPath);
   }
 
   async init() {
-    await this.clone(this.repoPath, this.options.url);
+    await this.clone(this.#options.basePath);
   }
 
   private getFilePath(id: string) {
-    return path.join(this.path, `${id}.json`);
+    return path.join(this.#path, `${id}.json`);
   }
 
   async get(id: string, branch?: string): Promise<z.infer<TSchema> | null> {
-    await this.pull(this.repoPath, branch);
+    await this.pull(this.#options.basePath, branch);
 
     try {
       const raw = await fs.promises.readFile(this.getFilePath(id), 'utf-8') as string;
-      return this.schema.parse(JSON.parse(raw));
+      return this.#options.schema.parse(JSON.parse(raw));
     }
     catch (err: any) {
       if (err.code === 'ENOENT')
@@ -140,16 +163,16 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
   }
 
   async list(branch?: string): Promise<z.infer<TSchema>[]> {
-    await this.pull(this.repoPath, branch);
+    await this.pull(this.#options.basePath, branch);
 
     try {
-      const files = await fs.promises.readdir(this.path) as string[];
+      const files = await fs.promises.readdir(this.#path) as string[];
       const items = await Promise.all(
         files
           .filter(f => f.endsWith('.json'))
-          .map(f => fs.promises.readFile(path.join(this.path, f), 'utf-8')),
+          .map(f => fs.promises.readFile(path.join(this.#path, f), 'utf-8')),
       ) as string[];
-      return items.map(json => this.schema.parse(JSON.parse(json)));
+      return items.map(json => this.#options.schema.parse(JSON.parse(json)));
     }
     catch (err: any) {
       if (err.code === 'ENOENT')
@@ -194,52 +217,52 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
   }
 
   async create<T extends z.infer<TSchema>>(data: Omit<T, 'id'>, scope?: string, branch?: string): Promise<T> {
-    const validated = this.schema.parse({
+    const validated = this.#options.schema.parse({
       id: createId(),
       ...data,
     });
     const filepath = this.getFilePath(validated.id);
-    await fs.promises.mkdir(this.path, { recursive: true });
+    await fs.promises.mkdir(this.#path, { recursive: true });
     await fs.promises.writeFile(filepath, JSON.stringify(validated, null, 2));
 
-    await this.add(this.repoPath, filepath);
+    await this.add(this.#options.basePath, filepath);
     await this.commit(
-      this.repoPath,
+      this.#options.basePath,
       {
         type: 'feat',
         scope,
-        message: `added ${this.pathRel(this.repoPath, filepath)}`,
+        message: `added ${this.pathRel(this.#options.basePath, filepath)}`,
       },
       branch,
     );
-    await this.push(this.repoPath, branch);
+    await this.push(this.#options.basePath, branch);
 
     return validated;
   }
 
   async update<T extends z.infer<TSchema>>(id: string, data: Partial<T>, scope?: string, branch?: string): Promise<T> {
-    await this.pull(this.repoPath, branch);
+    await this.pull(this.#options.basePath, branch);
 
     const filepath = this.getFilePath(id);
     const raw = await fs.promises.readFile(filepath, 'utf-8') as string;
-    const updated = this.schema.parse({
+    const updated = this.#options.schema.parse({
       ...JSON.parse(raw),
       ...data,
     });
 
     await fs.promises.writeFile(filepath, JSON.stringify(updated, null, 2));
 
-    await this.add(this.repoPath, filepath);
+    await this.add(this.#options.basePath, filepath);
     await this.commit(
-      this.repoPath,
+      this.#options.basePath,
       {
         type: 'fix',
         scope,
-        message: `updated ${this.pathRel(this.repoPath, filepath)}`,
+        message: `updated ${this.pathRel(this.#options.basePath, filepath)}`,
       },
       branch,
     );
-    await this.push(this.repoPath, branch);
+    await this.push(this.#options.basePath, branch);
 
     return updated;
   }
@@ -248,16 +271,16 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
     const filepath = this.getFilePath(id);
     await fs.promises.unlink(filepath);
 
-    await this.remove(this.repoPath, filepath);
+    await this.remove(this.#options.basePath, filepath);
     await this.commit(
-      this.repoPath,
+      this.#options.basePath,
       {
         type: 'chore',
         scope,
-        message: `deleted ${this.pathRel(this.repoPath, filepath)}`,
+        message: `deleted ${this.pathRel(this.#options.basePath, filepath)}`,
       },
       branch,
     );
-    await this.push(this.repoPath, branch);
+    await this.push(this.#options.basePath, branch);
   }
 }
