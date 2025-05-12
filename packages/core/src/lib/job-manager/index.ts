@@ -16,9 +16,9 @@ export class JobManager {
   #cronLibrary = new Map<string, nodeCron.ScheduledTask>();
 
   #pool = new FixedThreadPool<
-        Jobs<any> | undefined,
-        Jobs<any> | undefined
-  >(1, path.join(__dirname, 'worker.ts'), {
+    Jobs<any> | undefined,
+    Jobs<any> | undefined
+  >(1, path.join(__dirname, 'workers', 'worker.ts'), {
     enableTasksQueue: true,
     tasksQueueOptions: {
       size: 5,
