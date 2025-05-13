@@ -1,9 +1,7 @@
 import type { AnyContractRouter } from '@orpc/contract';
 import type { AnyRouter } from '@orpc/server';
-import type { GitagerOptions } from '../..';
-import type { JobManager } from '../job-manager';
+import type { InitialContext } from '../..';
 import { createServer as createNodeServer } from 'node:http';
-import { oc } from '@orpc/contract';
 import { OpenAPIHandler } from '@orpc/openapi/node';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { implement, onError, os } from '@orpc/server';
@@ -11,10 +9,7 @@ import { CORSPlugin } from '@orpc/server/plugins';
 import { ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod';
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from './errors';
 
-interface InitialContext {
-  options: GitagerOptions;
-  jobManager: JobManager;
-}
+
 
 export function createServer<T extends AnyRouter>(router: T, context: InitialContext) {
   const handler = new OpenAPIHandler<InitialContext>(router, {
@@ -50,25 +45,4 @@ export function createServer<T extends AnyRouter>(router: T, context: InitialCon
       res.end('NOT_FOUND');
     }
   });
-}
-
-export function createContract() {
-  return {
-    pub: oc.errors({
-      INTERNAL_SERVER_ERROR,
-    }),
-    auth: oc.errors({
-      INTERNAL_SERVER_ERROR,
-      UNAUTHORIZED,
-    }),
-  };
-}
-
-export function createRouter<T extends AnyContractRouter>(contract: T) {
-  return implement<typeof contract>(contract)
-    .$context<InitialContext>();
-}
-
-export function createMiddleware() {
-  return os.$context<InitialContext>();
 }
