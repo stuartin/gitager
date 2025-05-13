@@ -1,5 +1,5 @@
-import { oc, type AnyContractRouter } from "@orpc/contract";
-import { implement, os } from "@orpc/server";
+import { ContractProcedure, oc, type AnyContractProcedure, type AnyContractRouter, type ContractRouter } from "@orpc/contract";
+import { implement, os, type AnyMiddleware, type AnyProcedure, type Router } from "@orpc/server";
 import type { InitialContext } from "..";
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../lib/orpc/errors";
 import type { JobsTask } from "../lib/job-manager";
@@ -28,7 +28,7 @@ export function createMiddleware() {
     return os.$context<InitialContext>();
 }
 
-export type GitagerPlugin = ReturnType<typeof createPlugin>
+export type GitagerPlugin = ReturnType<typeof createPlugin<any, Record<string, AnyContractProcedure>, Record<string, AnyProcedure>>>
 export function createPlugin<
     Middleware,
     Contract,
