@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { NOT_FOUND, UNPROCESSABLE_CONTENT } from '../../lib/orpc/errors';
-import { CursorPaginationSchema } from '../../lib/orpc/schemas';
 import { createPlugin } from '../../plugins';
 import { requireAuth } from '../../plugins/middleware';
+import { CursorPaginationSchema, IDSchema } from '../../plugins/schemas';
 
 export const JobsSchema = z.object({
-  id: z.string().cuid2().describe('The job id'),
+  id: IDSchema,
   name: z.string().describe('The name of the job'),
   task: z.string().describe('The task to execute'),
   cron: z.string().default('*/5 * * * *').describe('A cron string for when the job should run'),

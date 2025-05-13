@@ -5,7 +5,8 @@
     ".": "./src/index.ts",
     "./errors": "./src/lib/orpc/errors.ts",
     "./plugins": "./src/plugins/index.ts",
-    "./plugins/middleware": "./src/plugins/middleware/index.ts"
+    "./plugins/middleware": "./src/plugins/middleware/index.ts",
+    "./plugins/schemas": "./src/plugins/schemas/index.ts"
   },
   "scripts": {
     "lint": "eslint ."

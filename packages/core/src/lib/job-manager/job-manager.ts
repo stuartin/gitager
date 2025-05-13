@@ -1,4 +1,3 @@
-import type { CursorPagination } from '../orpc/schemas';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createGitDB, type GitDB } from '@gitager/git-db';
@@ -7,6 +6,7 @@ import { FixedThreadPool, PoolEvents, type TaskFunction } from 'poolifier';
 import { JobsSchema } from '../../api/core/jobs';
 import type { z } from 'zod';
 import type { GitagerOptions } from '../..';
+import type { CursorPagination } from '../../plugins/schemas';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
