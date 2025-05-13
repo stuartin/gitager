@@ -2,6 +2,7 @@ import { oc, type AnyContractRouter } from "@orpc/contract";
 import { implement, os } from "@orpc/server";
 import type { InitialContext } from "..";
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../lib/orpc/errors";
+import type { JobsTask } from "../lib/job-manager";
 
 export function createContract() {
     return {
@@ -23,7 +24,6 @@ export function createRouter<T extends AnyContractRouter>(contract: T) {
 export function createMiddleware() {
     return os.$context<InitialContext>();
 }
-
 
 export function createPlugin<
     Middleware,
@@ -50,5 +50,15 @@ export function createPlugin<
     return {
         contract,
         router,
+    }
+}
+
+export function createTask<Input, Output>(
+    name: string,
+    execute: JobsTask<Input, Output>['execute']
+): JobsTask<Input, Output> {
+    return {
+        name,
+        execute
     }
 }

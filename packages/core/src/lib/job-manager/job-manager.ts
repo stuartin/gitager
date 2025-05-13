@@ -9,7 +9,7 @@ import type { z } from 'zod';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-type JobsTask<TInput = any, TOutput = any> = {
+export type JobsTask<TInput = any, TOutput = any> = {
   name: string;
   execute: TaskFunction<Jobs<TInput, TOutput> | undefined, Jobs<TInput, TOutput> | undefined>;
 }
@@ -35,28 +35,32 @@ export class JobManager {
   #pool = new FixedThreadPool<
     Jobs<any> | undefined,
     Jobs<any> | undefined
-  >(1, path.join(__dirname, 'workers', 'worker.ts'), {
-    enableTasksQueue: true,
-    tasksQueueOptions: {
-      size: 5,
-    },
-    onlineHandler: async () => {
-      console.info('pool online');
-      await this.db.init();
+  >(
+    1,
+    path.join(__dirname, 'workers', 'worker.ts'),
+    {
+      enableTasksQueue: true,
+      tasksQueueOptions: {
+        size: 5,
+      },
+      onlineHandler: async () => {
+        console.info('pool online');
+        await this.db.init();
 
-      const jobs = await this.db.query({
-        where: {
-          OR: [
-            { status: { equals: 'in-progress' } },
-            { status: { equals: 'pending' } },
-          ],
-        },
-      });
+        const jobs = await this.db.query({
+          where: {
+            OR: [
+              { status: { equals: 'in-progress' } },
+              { status: { equals: 'pending' } },
+            ],
+          },
+        });
 
-      jobs.forEach(job => this.scheduleJob(job));
-    },
-    errorHandler: e => console.error('pool error', e),
-  });
+        jobs.forEach(job => this.scheduleJob(job));
+      },
+      errorHandler: e => console.error('pool error', e),
+    }
+  );
 
   constructor(
     options: JobManagerOptions,
@@ -67,7 +71,7 @@ export class JobManager {
       basePath: '/core',
       subPath: '/jobs'
     });
-    options.tasks.forEach(task => this.#pool.addTaskFunction(task.name, task.execute));
+    options.tasks.forEach(task => this.addTask(task));
 
     this.#pool.emitter?.on(PoolEvents.ready, () => console.info('Pool ready'));
     this.#pool.emitter?.on(PoolEvents.busy, () => console.info('Pool busy'));
@@ -115,6 +119,12 @@ export class JobManager {
       cronJob.stop();
       this.#cronLibrary.delete(job.id);
     }
+  }
+
+  async addTask(task: JobsTask) {
+    if (this.#pool.hasTaskFunction(task.name)) return
+
+    await this.#pool.addTaskFunction(task.name, task.execute)
   }
 
   async get(id: string) {
