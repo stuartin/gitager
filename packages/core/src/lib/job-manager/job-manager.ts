@@ -1,11 +1,12 @@
 import type { CursorPagination } from '../orpc/schemas';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createGitDB, type GitDB, type GitOptions } from '@gitager/git-db';
+import { createGitDB, type GitDB } from '@gitager/git-db';
 import nodeCron from 'node-cron';
 import { FixedThreadPool, PoolEvents, type TaskFunction } from 'poolifier';
 import { JobsSchema } from '../../api/core/jobs';
 import type { z } from 'zod';
+import type { GitagerOptions } from '../..';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,11 +22,6 @@ type Jobs<
   inputs?: TInputs;
   outputs?: TOutputs;
 };
-
-export type JobManagerOptions = {
-  git: GitOptions,
-  tasks: JobsTask<any, any>[],
-}
 
 export class JobManager {
   protected db: GitDB<typeof JobsSchema>;
@@ -63,7 +59,7 @@ export class JobManager {
   );
 
   constructor(
-    options: JobManagerOptions,
+    options: GitagerOptions,
   ) {
     this.db = createGitDB({
       git: options.git,
@@ -71,7 +67,7 @@ export class JobManager {
       basePath: '/core',
       subPath: '/jobs'
     });
-    options.tasks.forEach(task => this.addTask(task));
+    options.tasks?.forEach(task => this.addTask(task));
 
     this.#pool.emitter?.on(PoolEvents.ready, () => console.info('Pool ready'));
     this.#pool.emitter?.on(PoolEvents.busy, () => console.info('Pool busy'));

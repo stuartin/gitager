@@ -1,7 +1,8 @@
-import { JobManager, type JobManagerOptions, type JobsTask } from "./job-manager";
+import type { GitagerOptions } from "../..";
+import { JobManager, type JobsTask } from "./job-manager";
 
-export type { JobManagerOptions, JobManager, JobsTask }
+export type { JobManager, JobsTask }
 
-export function createJobs(options: JobManagerOptions) {
+export function createJobs(options: GitagerOptions) {
     return new JobManager(options)
 }

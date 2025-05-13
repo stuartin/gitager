@@ -4,6 +4,7 @@ import type { InitialContext } from "..";
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../lib/orpc/errors";
 import type { JobsTask } from "../lib/job-manager";
 
+export type GitagerContract = ReturnType<typeof createContract>
 export function createContract() {
     return {
         pub: oc.errors({
@@ -16,15 +17,18 @@ export function createContract() {
     };
 }
 
+export type GitagerRouter = ReturnType<typeof createRouter>
 export function createRouter<T extends AnyContractRouter>(contract: T) {
     return implement<typeof contract>(contract)
         .$context<InitialContext>();
 }
 
+export type GitagerMiddleware = ReturnType<typeof createMiddleware>
 export function createMiddleware() {
     return os.$context<InitialContext>();
 }
 
+export type GitagerPlugin = ReturnType<typeof createPlugin>
 export function createPlugin<
     Middleware,
     Contract,
@@ -53,6 +57,7 @@ export function createPlugin<
     }
 }
 
+export type GitagerTask = ReturnType<typeof createTask>
 export function createTask<Input, Output>(
     name: string,
     execute: JobsTask<Input, Output>['execute']

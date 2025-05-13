@@ -1,13 +1,11 @@
-import type { AnyContractRouter } from '@orpc/contract';
 import type { AnyRouter } from '@orpc/server';
 import type { InitialContext } from '../..';
 import { createServer as createNodeServer } from 'node:http';
 import { OpenAPIHandler } from '@orpc/openapi/node';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
-import { implement, onError, os } from '@orpc/server';
+import { onError } from '@orpc/server';
 import { CORSPlugin } from '@orpc/server/plugins';
 import { ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from '@orpc/zod';
-import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from './errors';
 
 
 
