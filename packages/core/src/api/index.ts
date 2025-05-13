@@ -1,18 +1,19 @@
-import type { AnyContractProcedure, AnyContractRouter } from '@orpc/contract';
 import type { GitagerOptions } from '..';
-import { createPlugin } from '../plugins';
+import { createPlugin, type GitagerPluginContract, type GitagerPluginRouter } from '../plugins';
 import { coreContract, coreRouter } from './core';
 
 export function createAPI(options: GitagerOptions) {
 
   const plugins = options.plugins ?? [];
+
   const contracts = plugins.reduce(
-    (acc, { contract }) => ({ ...acc, ...contract }),
-    {} as Record<string, AnyContractProcedure>
+    (acc, { contract }) => deepMerge(acc, contract),
+    {} as GitagerPluginContract
   );
+
   const routers = plugins.reduce(
-    (acc, { router }) => ({ ...acc, ...router }),
-    {} as Record<string, AnyContractRouter>
+    (acc, { router }) => deepMerge(acc, router),
+    {} as GitagerPluginRouter
   );
 
   const { router } = createPlugin(
@@ -38,4 +39,23 @@ export function createAPI(options: GitagerOptions) {
 
 
   return router;
+}
+
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function deepMerge<A extends object, B extends object>(a: A, b: B): A & B {
+  const result: any = { ...a };
+
+  for (const key in b) {
+    if (isObject(b[key]) && isObject(result[key])) {
+      result[key] = deepMerge(result[key] as object, b[key] as object);
+    } else {
+      result[key] = b[key];
+    }
+  }
+
+  return result;
 }

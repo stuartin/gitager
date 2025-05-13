@@ -28,7 +28,16 @@ export function createMiddleware() {
     return os.$context<InitialContext>();
 }
 
-export type GitagerPlugin = ReturnType<typeof createPlugin<any, Record<string, AnyContractProcedure>, Record<string, AnyProcedure>>>
+
+export type GitagerPluginContract = {
+    [key: string]: AnyContractProcedure | GitagerPluginContract;
+};
+
+export type GitagerPluginRouter = {
+    [key: string]: AnyProcedure | GitagerPluginRouter;
+};
+
+export type GitagerPlugin = ReturnType<typeof createPlugin<any, GitagerPluginContract, GitagerPluginRouter>>
 export function createPlugin<
     Middleware,
     Contract,
