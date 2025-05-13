@@ -1,7 +1,7 @@
-import type { InitialContext } from "@gitager/core";
-import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "@gitager/core/errors";
 import { oc, type AnyContractRouter } from "@orpc/contract";
 import { implement, os } from "@orpc/server";
+import type { InitialContext } from "..";
+import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../lib/orpc/errors";
 
 export function createContract() {
     return {
@@ -32,14 +32,14 @@ export function createPlugin<
 >(
     name: string,
     plugin: {
-        middleware: (mw: ReturnType<typeof createMiddleware>) => Middleware
+        middleware?: (mw: ReturnType<typeof createMiddleware>) => Middleware
         contract: (oc: ReturnType<typeof createContract>) => Contract
-        router: (create: typeof createRouter, contract: Contract, middleware: Middleware) => Router
+        router: (create: typeof createRouter, contract: Contract, middleware?: Middleware) => Router
     }
 ): { contract: Contract; router: Router } {
     const mw = createMiddleware()
     const oc = createContract()
-    const middleware = plugin.middleware(mw)
+    const middleware = plugin.middleware?.(mw)
     const contract = plugin.contract(oc)
     const router = plugin.router(createRouter, contract, middleware)
 
