@@ -1,16 +1,24 @@
 import { createMiddleware } from "..";
 import { type GitDBOptions, createGitDB } from "@gitager/git-db";
-import { UNAUTHORIZED } from "../../lib/orpc/errors";
+import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../../lib/orpc/errors";
+import type { z } from "zod";
 
 
-export const db = (options: GitDBOptions) => createMiddleware().middleware(async ({ next }) => {
-    const db = createGitDB(options);
-    await db.init();
+export const gitDB = <TSchema extends z.ZodTypeAny>(options: Omit<GitDBOptions<TSchema>, 'git'>) => createMiddleware()
+    .errors({
+        INTERNAL_SERVER_ERROR
+    })
+    .middleware(async ({ next, context }) => {
+        const db = createGitDB<TSchema>({
+            git: context.options.git,
+            ...options
+        });
+        await db.init();
 
-    return next({
-        context: { db },
-    });
-})
+        return next({
+            context: { db },
+        });
+    })
 
 
 export const requireAuth = () => createMiddleware()

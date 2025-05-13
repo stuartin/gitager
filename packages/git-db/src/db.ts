@@ -4,7 +4,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { fs } from 'memfs';
 import { Git, type GitOptions } from './git';
 
-export type GitDBOptions = {
+export type GitDBOptions<TSchema extends z.ZodTypeAny = z.ZodTypeAny> = {
   /**
    * The git configuration options
    */
@@ -13,7 +13,7 @@ export type GitDBOptions = {
   /**
  * The zod schema to use when validating/querying the data
  */
-  schema: z.AnyZodObject,
+  schema: TSchema,
 
   /**
  * The virtual folder to clone the repository to. Must be unique per repository
@@ -24,7 +24,7 @@ export type GitDBOptions = {
  * A sub path to use as the root folder
  * @default "/"
  */
-  subPath: `/${string}`
+  subPath?: `/${string}`
 }
 
 
@@ -133,11 +133,11 @@ export class GitDB<TSchema extends z.ZodTypeAny> extends Git {
   #path: string;
 
   constructor(
-    options: GitDBOptions
+    options: GitDBOptions<TSchema>
   ) {
     super(options.git);
     this.#options = options
-    this.#path = path.join(options.basePath, options.subPath);
+    this.#path = path.join(options.basePath, options.subPath || '/');
   }
 
   async init() {
