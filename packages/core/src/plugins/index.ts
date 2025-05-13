@@ -34,12 +34,16 @@ export function createPlugin<
     plugin: {
         middleware?: (mw: ReturnType<typeof createMiddleware>) => Middleware
         contract: (oc: ReturnType<typeof createContract>) => Contract
-        router: (create: typeof createRouter, contract: Contract, middleware?: Middleware) => Router
+        router: (
+            create: typeof createRouter,
+            contract: Contract,
+            middleware: Middleware extends Middleware ? Middleware : undefined
+        ) => Router
     }
 ): { contract: Contract; router: Router } {
     const mw = createMiddleware()
     const oc = createContract()
-    const middleware = plugin.middleware?.(mw)
+    const middleware = plugin.middleware?.(mw) as Middleware extends Middleware ? Middleware : undefined
     const contract = plugin.contract(oc)
     const router = plugin.router(createRouter, contract, middleware)
 

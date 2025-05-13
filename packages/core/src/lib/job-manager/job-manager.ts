@@ -28,7 +28,7 @@ export type JobManagerOptions = {
 }
 
 export class JobManager {
-  db: GitDB<typeof JobsSchema>;
+  protected db: GitDB<typeof JobsSchema>;
 
   #cronLibrary = new Map<string, nodeCron.ScheduledTask>();
 
