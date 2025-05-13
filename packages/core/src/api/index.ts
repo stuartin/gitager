@@ -1,20 +1,27 @@
 import type { GitagerOptions } from '..';
-import { createContract, createRouter } from '../lib/orpc';
-import { t } from '../lib/plugins';
-import { coreContract } from './core/core.contract';
-import { coreRouter } from './core/core.router';
+import { createPlugin } from '../plugins';
+import { coreContract, coreRouter } from './core';
 
 export function createAPI(options: GitagerOptions) {
-  const apiContract = createContract().pub.prefix(options.api?.basePath || '/api/v1').router({
-    ...coreContract,
-    test: t.contract
-  });
+  const { router } = createPlugin(
+    'api',
+    {
+      contract: (oc) => (
+        oc.pub
+          .prefix(options.api?.basePath || '/api/v1')
+          .router({
+            ...coreContract
+          })
+      ),
+      router: (create, contract) => {
+        const os = create(contract)
+        return os.router({
+          ...coreRouter
+        })
+      }
+    }
+  )
 
-  const apiRouter = createRouter(apiContract)
-    .router({
-      ...coreRouter,
-      test: t.router
-    });
 
-  return apiRouter;
+  return router;
 }
