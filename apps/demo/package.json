@@ -13,6 +13,7 @@
     "@gitager/config-typescript": "workspace:",
     "dotenv": "^16.5.0",
     "eslint": "catalog:",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "zod": "catalog:"
   }
 }
