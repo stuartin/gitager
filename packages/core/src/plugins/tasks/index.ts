@@ -1,4 +1,4 @@
-import type { JobsTask } from '../../../api/core/jobs/jobs.contract';
+import { createTask } from "..";
 
 interface Input {
   url: string;
@@ -12,13 +12,11 @@ interface Output {
   mark: boolean;
 }
 
-export const apiTask: JobsTask<Input, Output> = {
 
-  name: 'api-task',
-
-  execute: async (job) => {
-    if (!job)
-      return;
+const apiTask = createTask<Input, Output>(
+  'api-task',
+  (job) => {
+    if (!job) return;
 
     try {
       console.log({ job });
@@ -49,4 +47,4 @@ export const apiTask: JobsTask<Input, Output> = {
 
     return job;
   },
-};
+)
