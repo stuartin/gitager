@@ -1,7 +1,7 @@
 import path from 'node:path';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
-import { fs } from 'memfs';
+import { Volume, createFsFromVolume } from 'memfs';
 
 export type GitOptions = {
   /**
@@ -56,6 +56,9 @@ export const commits: Record<CommitType, string> = {
 };
 
 export class Git {
+  vol = new Volume;
+  fs = createFsFromVolume(this.vol);
+
   #options: GitOptions
 
   #author = {
@@ -74,7 +77,7 @@ export class Git {
 
   protected async clone(dir: string, url: string = this.#options.url, branch?: string) {
     await git.clone({
-      fs,
+      fs: this.fs,
       http,
       dir,
       url,
@@ -90,7 +93,7 @@ export class Git {
 
   protected async pull(dir: string, branch?: string): Promise<void> {
     await git.pull({
-      fs,
+      fs: this.fs,
       http,
       dir,
       author: this.#author,
@@ -105,7 +108,7 @@ export class Git {
   protected async add(dir: string, filepath: string) {
     const relativePath = this.pathRel(dir, filepath);
     await git.add({
-      fs,
+      fs: this.fs,
       dir,
       filepath: relativePath,
     });
@@ -114,7 +117,7 @@ export class Git {
   protected async remove(dir: string, filepath: string) {
     const relativePath = this.pathRel(dir, filepath);
     await git.remove({
-      fs,
+      fs: this.fs,
       dir,
       filepath: relativePath,
     });
@@ -130,7 +133,7 @@ export class Git {
     branch?: string,
   ) {
     await git.commit({
-      fs,
+      fs: this.fs,
       dir,
       ref: branch || this.#options.defaultBranch,
       message: `${commits[options.type]} ${options.type}${options.scope
@@ -142,7 +145,7 @@ export class Git {
 
   protected async push(dir: string, branch?: string) {
     await git.push({
-      fs,
+      fs: this.fs,
       http,
       dir,
       ref: branch || this.#options.defaultBranch,
@@ -155,7 +158,7 @@ export class Git {
 
   protected async log(dir: string, branch?: string) {
     return await git.log({
-      fs,
+      fs: this.fs,
       dir,
       depth: 5,
       ref: branch || this.#options.defaultBranch,
@@ -163,7 +166,7 @@ export class Git {
   }
 
   private async logFileStatus(dir: string, filepath: string) {
-    const status = await git.status({ fs, dir, filepath });
+    const status = await git.status({ fs: this.fs, dir, filepath });
     console.log('status:', { filepath, status });
   }
 

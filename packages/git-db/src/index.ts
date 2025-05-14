@@ -7,3 +7,5 @@ export type { GitOptions, GitDBOptions, GitDB }
 export function createGitDB<TSchema extends z.ZodTypeAny>(options: GitDBOptions<TSchema>) {
     return new GitDB<TSchema>(options)
 }
+
+export { GitShell } from './shell'
